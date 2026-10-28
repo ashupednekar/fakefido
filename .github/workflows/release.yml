@@ -1,0 +1,70 @@
+name: Build and publish Linux releases
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        goarch: [amd64, arm64]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Build Linux binary
+        env:
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 0
+        run: |
+          mkdir -p dist
+          GOOS=linux go build -trimpath -ldflags="-s -w" -o dist/fakefido .
+          tar -C dist -czf "fakefido-linux-${GOARCH}.tar.gz" fakefido
+          sha256sum "fakefido-linux-${GOARCH}.tar.gz" > "fakefido-linux-${GOARCH}.tar.gz.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fakefido-linux-${{ matrix.goarch }}
+          path: |
+            fakefido-linux-${{ matrix.goarch }}.tar.gz
+            fakefido-linux-${{ matrix.goarch }}.tar.gz.sha256
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: fakefido-linux-*
+          merge-multiple: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Upload release files to R2
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('manual-{0}', github.run_number) }}
+        run: |
+          test -n "$CLOUDFLARE_ACCOUNT_ID"
+          test -n "$CLOUDFLARE_API_TOKEN"
+          test -n "$R2_BUCKET"
+          for file in dist/*; do
+            name="$(basename "$file")"
+            npx --yes wrangler@4 r2 object put "$R2_BUCKET/releases/$RELEASE_TAG/$name" --file="$file" --remote
+            npx --yes wrangler@4 r2 object put "$R2_BUCKET/latest/$name" --file="$file" --remote
+          done
+          npx --yes wrangler@4 r2 object put "$R2_BUCKET/latest/install.sh" --file=install.sh --remote
