@@ -47,6 +47,22 @@
         </div>
       </section>
 
+      <section class="mx-auto max-w-5xl border-t border-neutral-200 px-6 py-20" id="usage">
+        <div class="grid gap-8 md:grid-cols-2 md:gap-20">
+          <div><p class="mb-4 text-xs font-medium uppercase tracking-[.16em] text-neutral-500">Using FakeFido</p><h2 class="text-3xl font-semibold tracking-[-.04em]">A few useful commands.</h2><p class="mt-5 text-sm leading-7 text-neutral-600">The Linux installer starts FakeFido as a system service. Check whether it is running or follow its logs with:</p><pre class="mt-4 overflow-x-auto rounded-md bg-neutral-950 p-4 font-mono text-xs leading-6 text-neutral-200"><code>sudo systemctl status fakefido
+sudo journalctl -u fakefido -f</code></pre></div>
+          <div class="space-y-5 text-sm leading-7 text-neutral-600">
+            <p>For direct CLI use, start the virtual device with <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">fakefido start</code>. The CLI can also show saved identities, delete one by ID prefix, and configure PIN behavior:</p>
+            <pre class="overflow-x-auto rounded-md bg-neutral-950 p-4 font-mono text-xs leading-6 text-neutral-200"><code>fakefido list
+fakefido delete --identity &lt;id-prefix&gt;
+fakefido pin enable
+fakefido pin disable
+fakefido pin set --pin 1234</code></pre>
+            <p>Use <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">fakefido --help</code> for all commands. The vault path and passphrase can be set with the global <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--vault</code> and <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--passphrase</code> flags before the command. The installed service keeps its vault at <code class="font-mono text-xs">/var/lib/fakefido/vault.json</code>; its passphrase is in the root-readable <code class="font-mono text-xs">/etc/fakefido/fakefido.env</code>.</p>
+          </div>
+        </div>
+      </section>
+
       <section class="mx-auto grid max-w-5xl gap-8 border-t border-neutral-200 px-6 py-20 md:grid-cols-2 md:gap-20">
         <div><p class="mb-4 text-xs font-medium uppercase tracking-[.16em] text-neutral-500">Under the hood</p><h2 class="text-3xl font-semibold tracking-[-.04em]">A demo built on<br>Virtual FIDO.</h2></div>
         <div class="space-y-4 text-sm leading-7 text-neutral-600"><p>FakeFido wraps <a class="font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-700" href="https://github.com/bulwarkid/virtual-fido">BulwarkID’s Virtual FIDO repository</a>, which implements a virtual FIDO2/U2F USB device. This project connects that library to a simple command-line demo and local credential vault.</p><p>It’s a place to learn, inspect the code, and experiment with test accounts. A virtual device cannot provide the physical isolation or assurances of an actual authenticator.</p><p>After installation, manage the systemd service with <code class="font-mono text-xs">systemctl status fakefido</code> and view logs with <code class="font-mono text-xs">journalctl -u fakefido -f</code>.</p></div>
