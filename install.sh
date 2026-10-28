@@ -48,7 +48,8 @@ install_usbip() {
 install_usbip
 mkdir -p "$INSTALL_DIR" "$DATA_DIR" "$CONFIG_DIR"
 chown "$INSTALL_USER:$INSTALL_GROUP" "$DATA_DIR" "$CONFIG_DIR"
-chmod 700 "$DATA_DIR" "$CONFIG_DIR"
+chmod 2770 "$DATA_DIR"
+chmod 700 "$CONFIG_DIR"
 archive="fakefido-linux-$arch.tar.gz"
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
@@ -69,6 +70,7 @@ chown "$INSTALL_USER:$INSTALL_GROUP" "$CONFIG_DIR/fakefido.env"
 chmod 600 "$CONFIG_DIR/fakefido.env"
 if [ -f "$DATA_DIR/vault.json" ]; then
   chown "$INSTALL_USER:$INSTALL_GROUP" "$DATA_DIR/vault.json"
+  chmod 660 "$DATA_DIR/vault.json"
 fi
 
 cat > "$UNIT_FILE" <<'UNIT'
@@ -83,6 +85,7 @@ ExecStart=/bin/sh -c 'exec /usr/local/bin/fakefido --vault /var/lib/fakefido/vau
 Restart=on-failure
 RestartSec=3
 WorkingDirectory=/var/lib/fakefido
+UMask=0007
 
 [Install]
 WantedBy=multi-user.target

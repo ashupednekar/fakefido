@@ -37,7 +37,7 @@ func (support *ClientSupport) ApproveClientAction(action fido_client.ClientActio
 }
 
 func (support *ClientSupport) SaveData(data []byte) {
-	f, err := os.OpenFile(support.vaultFilename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	f, err := os.OpenFile(support.vaultFilename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0660)
 	checkErr(err, "Could not open vault file")
 	_, err = f.Write(data)
 	checkErr(err, "Could not write vault data")
