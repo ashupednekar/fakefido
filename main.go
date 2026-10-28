@@ -102,16 +102,65 @@ func setPIN(cmd *cobra.Command, args []string) {
 }
 
 func start(cmd *cobra.Command, args []string) {
+	client := createClient()
 	log.Printf("Starting FakeFido")
 	if verbose {
 		log.Printf("Vault: %s", vaultFilename)
 	}
-	client := createClient()
 	runServer(client)
 	log.Printf("FakeFido stopped")
 }
 
+func configureVaultDefaults() error {
+	vaultFlag := rootCmd.PersistentFlags().Lookup("vault")
+	vaultWasSet := vaultFlag != nil && vaultFlag.Changed
+	passphraseFlag := rootCmd.PersistentFlags().Lookup("passphrase")
+	passphraseWasSet := passphraseFlag != nil && passphraseFlag.Changed
+
+	if !passphraseWasSet {
+		if envPassphrase := os.Getenv("FAKEFIDO_PASSPHRASE"); envPassphrase != "" {
+			vaultPassphrase = envPassphrase
+		}
+	}
+	if vaultWasSet {
+		return nil
+	}
+
+	installedVault := "/var/lib/fakefido/vault.json"
+	info, err := os.Stat(installedVault)
+	if os.IsNotExist(err) {
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("could not check installed vault %q: %w", installedVault, err)
+	}
+	if info.IsDir() {
+		return fmt.Errorf("installed vault path %q is a directory", installedVault)
+	}
+
+	vaultFilename = installedVault
+	if passphraseWasSet || os.Getenv("FAKEFIDO_PASSPHRASE") != "" {
+		return nil
+	}
+
+	data, err := os.ReadFile("/etc/fakefido/fakefido.env")
+	if err != nil {
+		return fmt.Errorf("installed vault found at %q; run as root or pass --passphrase to read it: %w", installedVault, err)
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		key, value, ok := strings.Cut(line, "=")
+		if ok && strings.TrimSpace(key) == "FAKEFIDO_PASSPHRASE" {
+			vaultPassphrase = strings.Trim(strings.TrimSpace(value), "\"'")
+			if vaultPassphrase != "" {
+				return nil
+			}
+		}
+	}
+	return fmt.Errorf("installed vault found at %q but FAKEFIDO_PASSPHRASE is missing from /etc/fakefido/fakefido.env", installedVault)
+}
+
 func createClient() *fido_client.DefaultFIDOClient {
+	checkErr(configureVaultDefaults(), "Could not select identity vault")
 	// ALL OF THIS IS INSECURE, FOR TESTING PURPOSES ONLY
 	caPrivateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	checkErr(err, "Could not generate attestation CA private key")

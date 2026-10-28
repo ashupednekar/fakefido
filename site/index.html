@@ -58,7 +58,7 @@ fakefido delete --identity &lt;id-prefix&gt;
 fakefido pin enable
 fakefido pin disable
 fakefido pin set --pin 1234</code></pre>
-            <p>Use <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">fakefido --help</code> for all commands. The vault path and passphrase can be set with the global <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--vault</code> and <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--passphrase</code> flags before the command. The installed service keeps its vault at <code class="font-mono text-xs">/var/lib/fakefido/vault.json</code>; its passphrase is in the root-readable <code class="font-mono text-xs">/etc/fakefido/fakefido.env</code>.</p>
+            <p>Use <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">fakefido --help</code> for all commands. When installed, CLI commands prefer <code class="font-mono text-xs">/var/lib/fakefido/vault.json</code> if it exists; run <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">sudo fakefido list</code> to read it with the root-owned service passphrase. Use <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--vault</code> and <code class="rounded bg-neutral-100 px-1.5 py-1 font-mono text-xs text-neutral-900">--passphrase</code> before the command to override the defaults.</p>
           </div>
         </div>
       </section>

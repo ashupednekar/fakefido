@@ -35,6 +35,8 @@ go build -o fakefido .
 
 Run `./fakefido --help` for the available commands. The demo also has commands to list and delete vault identities and configure PIN behavior.
 
+When the installed vault exists, CLI commands prefer `/var/lib/fakefido/vault.json` over a `vault.json` in the current directory. Use `sudo fakefido list` to read the installed vault and its root-owned service passphrase. Pass `--vault` to select a different vault explicitly.
+
 ## Releases
 
 Pushing a `v*` tag builds Linux `amd64` and `arm64` archives, attaches them and SHA-256 checksums to a GitHub release, and uploads versioned and `latest/` copies to R2. The installer downloads the matching archive from the public R2 bucket.
