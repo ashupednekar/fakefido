@@ -127,14 +127,19 @@ func configureVaultDefaults() error {
 	}
 
 	installedVault := "/var/lib/fakefido/vault.json"
-	info, err := os.Stat(installedVault)
-	if os.IsNotExist(err) {
+	passphraseFile := "/etc/fakefido/fakefido.env"
+	vaultInfo, vaultErr := os.Stat(installedVault)
+	_, passphraseFileErr := os.Stat(passphraseFile)
+	if os.IsNotExist(vaultErr) && os.IsNotExist(passphraseFileErr) {
 		return nil
 	}
-	if err != nil {
-		return fmt.Errorf("could not check installed vault %q: %w", installedVault, err)
+	if vaultErr != nil && !os.IsNotExist(vaultErr) {
+		return fmt.Errorf("could not check installed vault %q: %w", installedVault, vaultErr)
 	}
-	if info.IsDir() {
+	if passphraseFileErr != nil && !os.IsNotExist(passphraseFileErr) {
+		return fmt.Errorf("could not check installed service config %q: %w", passphraseFile, passphraseFileErr)
+	}
+	if vaultErr == nil && vaultInfo.IsDir() {
 		return fmt.Errorf("installed vault path %q is a directory", installedVault)
 	}
 
@@ -143,7 +148,7 @@ func configureVaultDefaults() error {
 		return nil
 	}
 
-	data, err := os.ReadFile("/etc/fakefido/fakefido.env")
+	data, err := os.ReadFile(passphraseFile)
 	if err != nil {
 		return fmt.Errorf("installed vault found at %q; run as root or pass --passphrase to read it: %w", installedVault, err)
 	}
@@ -156,7 +161,7 @@ func configureVaultDefaults() error {
 			}
 		}
 	}
-	return fmt.Errorf("installed vault found at %q but FAKEFIDO_PASSPHRASE is missing from /etc/fakefido/fakefido.env", installedVault)
+	return fmt.Errorf("installed vault selected at %q but FAKEFIDO_PASSPHRASE is missing from %s", installedVault, passphraseFile)
 }
 
 func createClient() *fido_client.DefaultFIDOClient {

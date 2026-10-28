@@ -35,7 +35,7 @@ go build -o fakefido .
 
 Run `./fakefido --help` for the available commands. The demo also has commands to list and delete vault identities and configure PIN behavior.
 
-When the installed vault exists, CLI commands prefer `/var/lib/fakefido/vault.json` over a `vault.json` in the current directory. Use `sudo fakefido list` to read the installed vault and its root-owned service passphrase. Pass `--vault` to select a different vault explicitly.
+When FakeFido is installed as a service, CLI commands use `/var/lib/fakefido/vault.json` even before the file is created, so newly saved credentials go to the service vault. Use `sudo fakefido list` to read it with the root-owned service passphrase. Pass `--vault` to select a different vault explicitly. Without a service install, commands use `vault.json` in the current directory.
 
 ## Releases
 
