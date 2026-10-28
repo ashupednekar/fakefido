@@ -8,24 +8,37 @@
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body class="bg-neutral-50 text-neutral-950 antialiased">
-    <header class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <header class="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
       <a class="text-sm font-semibold tracking-tight" href="#top">fakefido<span class="ml-2 text-neutral-400">/</span></a>
-      <a class="text-sm text-neutral-600 transition hover:text-black" href="https://github.com/ashupednekar/fakefido">GitHub ↗</a>
+      <a class="text-sm text-neutral-600 transition hover:text-black" href="https://github.com/ashupednekar/fakefido">GitHub <span aria-hidden="true">↗</span></a>
     </header>
     <main id="top">
-      <section class="mx-auto grid max-w-6xl gap-14 px-6 pb-20 pt-16 md:grid-cols-[1.2fr_.8fr] md:items-center md:pb-28 md:pt-24">
-        <div>
-          <p class="mb-5 text-xs font-medium uppercase tracking-[.18em] text-neutral-500">A virtual authenticator demo</p>
-          <h1 class="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-[-.055em] sm:text-7xl">FIDO flows,<br>without the hardware.</h1>
-          <p class="mt-7 max-w-xl text-lg leading-8 text-neutral-600">FakeFido is a small command-line project for exploring FIDO2 and WebAuthn with a virtual USB device.</p>
-          <div class="mt-8 flex flex-wrap items-center gap-5"><a class="rounded-md bg-neutral-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-neutral-700" href="#install">Get started ↓</a><a class="text-sm font-medium text-neutral-700 underline decoration-neutral-300 underline-offset-4 hover:text-black" href="https://github.com/bulwarkid/virtual-fido">Built on Virtual FIDO ↗</a></div>
+      <section class="mx-auto flex max-w-4xl flex-col items-center px-6 pb-20 pt-20 text-center sm:pt-28">
+        <p class="mb-6 text-xs font-medium uppercase tracking-[.18em] text-neutral-500">A virtual authenticator demo</p>
+        <h1 class="max-w-3xl text-5xl font-semibold leading-[1.02] tracking-[-.055em] sm:text-7xl">FIDO flows,<br>without the hardware.</h1>
+        <p class="mt-7 max-w-2xl text-lg leading-8 text-neutral-600">FakeFido is a small command-line project for exploring FIDO2 and WebAuthn with a virtual USB device.</p>
+        <a class="mt-7 text-sm font-medium text-neutral-700 underline decoration-neutral-300 underline-offset-4 transition hover:text-black" href="https://github.com/bulwarkid/virtual-fido">Built on BulwarkID’s Virtual FIDO ↗</a>
+
+        <div id="install" class="mt-14 w-full max-w-2xl text-left">
+          <div class="mb-3 flex items-end justify-between gap-4"><div><p class="text-sm font-semibold">Install on Linux</p><p class="mt-1 text-xs text-neutral-500">amd64 · arm64 · systemd</p></div><span class="text-xs text-neutral-500">Requires root</span></div>
+          <div class="overflow-hidden rounded-lg border border-neutral-300 bg-white shadow-sm">
+            <div class="flex items-center justify-between border-b border-neutral-200 px-4 py-3"><span class="font-mono text-[11px] text-neutral-500">terminal</span><button id="copy-install" class="rounded px-2 py-1 text-xs text-neutral-600 transition hover:bg-neutral-100 hover:text-black" type="button">Copy</button></div>
+            <pre class="overflow-x-auto whitespace-pre-wrap break-all bg-neutral-950 p-5 font-mono text-xs leading-6 text-neutral-200"><code id="install-command">export FAKEFIDO_R2_PUBLIC_URL="https://your-download-domain"
+curl -fsSL "$FAKEFIDO_R2_PUBLIC_URL/latest/install.sh" | sudo env FAKEFIDO_R2_PUBLIC_URL="$FAKEFIDO_R2_PUBLIC_URL" sh</code></pre>
+          </div>
+          <p class="mt-3 text-left text-xs leading-5 text-neutral-500">Replace <code class="font-mono text-neutral-700">https://your-download-domain</code> with the public URL configured for the release bucket.</p>
         </div>
-        <div class="rounded-lg border border-neutral-200 bg-white p-5 shadow-sm">
-          <div class="mb-5 flex items-center gap-1.5 border-b border-neutral-100 pb-4"><i class="h-2 w-2 rounded-full bg-neutral-200"></i><i class="h-2 w-2 rounded-full bg-neutral-200"></i><i class="h-2 w-2 rounded-full bg-neutral-200"></i><span class="ml-auto font-mono text-[11px] text-neutral-400">terminal</span></div>
-          <p class="font-mono text-sm text-neutral-700"><span class="text-neutral-400">$</span> fakefido start</p><p class="mt-3 font-mono text-xs text-neutral-400">virtual device · local machine</p>
-        </div>
+        <script>
+          document.querySelector('#copy-install').addEventListener('click', async (event) => {
+            const button = event.currentTarget;
+            await navigator.clipboard.writeText(document.querySelector('#install-command').textContent);
+            button.textContent = 'Copied';
+            setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+          });
+        </script>
       </section>
-      <section class="mx-auto max-w-6xl px-6 pb-20">
+
+      <section class="mx-auto max-w-5xl px-6 pb-20">
         <div class="grid gap-5 rounded-lg border border-neutral-300 bg-neutral-100 p-6 sm:grid-cols-[auto_1fr] sm:gap-7 sm:p-8">
           <div class="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-400 font-semibold text-neutral-700" aria-hidden="true">!</div>
           <div><p class="mb-2 text-xs font-medium uppercase tracking-[.16em] text-neutral-500">Please read before using</p><h2 class="text-xl font-semibold tracking-tight sm:text-2xl">This is not real WebAuthn security.</h2>
@@ -34,23 +47,13 @@
           </div>
         </div>
       </section>
-      <section class="mx-auto grid max-w-6xl gap-8 border-t border-neutral-200 px-6 py-20 md:grid-cols-2 md:gap-20">
+
+      <section class="mx-auto grid max-w-5xl gap-8 border-t border-neutral-200 px-6 py-20 md:grid-cols-2 md:gap-20">
         <div><p class="mb-4 text-xs font-medium uppercase tracking-[.16em] text-neutral-500">Under the hood</p><h2 class="text-3xl font-semibold tracking-[-.04em]">A demo built on<br>Virtual FIDO.</h2></div>
-        <div class="space-y-4 text-sm leading-7 text-neutral-600"><p>FakeFido wraps <a class="font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-700" href="https://github.com/bulwarkid/virtual-fido">BulwarkID’s Virtual FIDO repository</a>, which implements a virtual FIDO2/U2F USB device. This project connects that library to a simple command-line demo and local credential vault.</p><p>It’s a place to learn, inspect the code, and experiment with test accounts. A virtual device cannot provide the physical isolation or assurances of an actual authenticator.</p></div>
+        <div class="space-y-4 text-sm leading-7 text-neutral-600"><p>FakeFido wraps <a class="font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-700" href="https://github.com/bulwarkid/virtual-fido">BulwarkID’s Virtual FIDO repository</a>, which implements a virtual FIDO2/U2F USB device. This project connects that library to a simple command-line demo and local credential vault.</p><p>It’s a place to learn, inspect the code, and experiment with test accounts. A virtual device cannot provide the physical isolation or assurances of an actual authenticator.</p><p>After installation, manage the systemd service with <code class="font-mono text-xs">systemctl status fakefido</code> and view logs with <code class="font-mono text-xs">journalctl -u fakefido -f</code>.</p></div>
       </section>
-      <section id="install" class="border-y border-neutral-200 bg-neutral-100">
-        <div class="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-2 md:items-center md:gap-20">
-          <div><p class="mb-4 text-xs font-medium uppercase tracking-[.16em] text-neutral-500">Linux · systemd</p><h2 class="text-3xl font-semibold tracking-[-.04em]">Run it locally.</h2><p class="mt-5 max-w-md text-sm leading-7 text-neutral-600">The installer picks an amd64 or arm64 build, installs USB/IP, then enables FakeFido as a system service.</p><p class="mt-3 max-w-md text-xs leading-6 text-neutral-500">Set <code class="font-mono text-neutral-700">FAKEFIDO_R2_PUBLIC_URL</code> to the public base URL configured for the release bucket.</p></div>
-          <div class="rounded-lg border border-neutral-200 bg-white p-5 sm:p-6"><p class="mb-3 text-xs font-medium uppercase tracking-wider text-neutral-500">Install · requires root</p>
-            <pre class="overflow-x-auto whitespace-pre-wrap break-all rounded-md bg-neutral-950 p-4 font-mono text-xs leading-6 text-neutral-200"><code>export FAKEFIDO_R2_PUBLIC_URL="https://your-download-domain"
-curl -fsSL "$FAKEFIDO_R2_PUBLIC_URL/latest/install.sh" | sudo env FAKEFIDO_R2_PUBLIC_URL="$FAKEFIDO_R2_PUBLIC_URL" sh</code></pre>
-            <p class="mb-3 mt-6 text-xs font-medium uppercase tracking-wider text-neutral-500">Service</p><pre class="rounded-md bg-neutral-950 p-4 font-mono text-xs leading-6 text-neutral-200"><code>sudo systemctl status fakefido
-sudo journalctl -u fakefido -f</code></pre><p class="mt-4 text-xs leading-6 text-neutral-500">A random vault passphrase is created in <code class="font-mono">/etc/fakefido/fakefido.env</code>. Back it up securely. The vault is at <code class="font-mono">/var/lib/fakefido/vault.json</code>.</p>
-          </div>
-        </div>
-      </section>
-      <section class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-12 sm:flex-row sm:items-center sm:justify-between"><p class="max-w-2xl text-sm leading-6 text-neutral-600">Curious about the implementation? The code is open. Read the warning, then experiment with test accounts.</p><a class="shrink-0 text-sm font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-700" href="https://github.com/ashupednekar/fakefido">View FakeFido on GitHub ↗</a></section>
+      <section class="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-12 sm:flex-row sm:items-center sm:justify-between"><p class="max-w-2xl text-sm leading-6 text-neutral-600">Curious about the implementation? Read the warning, then experiment with test accounts.</p><a class="shrink-0 text-sm font-medium text-neutral-950 underline decoration-neutral-300 underline-offset-4 hover:decoration-neutral-700" href="https://github.com/ashupednekar/fakefido">View FakeFido on GitHub ↗</a></section>
     </main>
-    <footer class="mx-auto flex max-w-6xl flex-col gap-2 border-t border-neutral-200 px-6 py-6 text-xs text-neutral-500 sm:flex-row sm:justify-between"><span>FakeFido · A learning project, not a trusted authenticator.</span><a class="hover:text-black" href="https://ashupednekar.github.io">Ashu Pednekar ↗</a></footer>
+    <footer class="mx-auto flex max-w-5xl flex-col gap-2 border-t border-neutral-200 px-6 py-6 text-xs text-neutral-500 sm:flex-row sm:justify-between"><span>FakeFido · A learning project, not a trusted authenticator.</span><a class="hover:text-black" href="https://ashupednekar.github.io">Ashu Pednekar ↗</a></footer>
   </body>
 </html>
