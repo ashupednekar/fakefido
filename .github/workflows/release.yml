@@ -72,6 +72,8 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           test -n "$CLOUDFLARE_API_TOKEN"
           test -n "$R2_BUCKET"
+          npx --yes wrangler@4 r2 bucket dev-url enable "$R2_BUCKET" --force
+          npx --yes wrangler@4 r2 bucket dev-url get "$R2_BUCKET"
           for file in dist/*; do
             name="$(basename "$file")"
             npx --yes wrangler@4 r2 object put "$R2_BUCKET/releases/$RELEASE_TAG/$name" --file="$file" --remote
