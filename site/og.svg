@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#fafafa"/>
+  <rect x="44" y="44" width="1112" height="542" rx="18" fill="#fff" stroke="#d4d4d4" stroke-width="2"/>
+  <text x="92" y="112" fill="#171717" font-family="Arial, sans-serif" font-size="28" font-weight="700">fakefido</text>
+  <text x="92" y="208" fill="#737373" font-family="Arial, sans-serif" font-size="19" font-weight="600" letter-spacing="4">A VIRTUAL AUTHENTICATOR DEMO</text>
+  <text x="92" y="310" fill="#171717" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-4">FIDO flows,</text>
+  <text x="92" y="395" fill="#171717" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-4">without the hardware.</text>
+  <text x="96" y="464" fill="#737373" font-family="Arial, sans-serif" font-size="23">Explore FIDO2 and WebAuthn with a virtual USB device.</text>
+  <rect x="92" y="506" width="650" height="46" rx="7" fill="#171717"/>
+  <circle cx="116" cy="529" r="5" fill="#a3a3a3"/>
+  <text x="135" y="535" fill="#e5e5e5" font-family="monospace" font-size="17">fakefido · Linux · amd64 / arm64</text>
+  <g transform="translate(930 315)" fill="none" stroke="#171717" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 65V-15a55 55 0 0 1 110 0v80"/>
+    <rect x="-32" y="56" width="174" height="145" rx="24" fill="#f5f5f5"/>
+    <circle cx="55" cy="116" r="13" fill="#171717" stroke="none"/>
+    <path d="M55 129v27"/>
+    <path d="M142 137h56v28h-56"/>
+    <path d="M171 137v-18"/>
+  </g>
+  <text x="92" y="570" fill="#a3a3a3" font-family="Arial, sans-serif" font-size="16">fakefido.pages.dev</text>
+</svg>
