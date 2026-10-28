@@ -14,7 +14,7 @@ Prebuilt Linux binaries are published for `amd64` and `arm64`. The installer det
 curl -fsSL https://pub-7e86b3749663480cb15de05614bda9e4.r2.dev/latest/install.sh | sudo sh
 ```
 
-The service runs as root so it can attach the virtual USB device. The installer creates a random passphrase in `/etc/fakefido/fakefido.env` and stores the vault at `/var/lib/fakefido/vault.json`. Keep a backup of the passphrase and vault.
+The service runs as root so it can attach the virtual USB device. The installer creates a random passphrase in `/etc/fakefido/fakefido.env` and stores the vault at `/var/lib/fakefido/vault.json`. The installer assigns these paths to the user who ran `sudo`, so that user can manage the installed vault without `sudo`. Keep a backup of the passphrase and vault.
 
 ```sh
 sudo systemctl status fakefido
@@ -35,7 +35,7 @@ go build -o fakefido .
 
 Run `./fakefido --help` for the available commands. The demo also has commands to list and delete vault identities and configure PIN behavior.
 
-When FakeFido is installed as a service, CLI commands use `/var/lib/fakefido/vault.json` even before the file is created, so newly saved credentials go to the service vault. Use `sudo fakefido list` to read it with the root-owned service passphrase. Pass `--vault` to select a different vault explicitly. Without a service install, commands use `vault.json` in the current directory.
+When FakeFido is installed as a service, CLI commands use `/var/lib/fakefido/vault.json` even before the file is created, so newly saved credentials go to the service vault. The installer gives the invoking user access to the service vault passphrase, so commands such as `fakefido list`, `fakefido delete`, and `fakefido pin` work without `sudo`. Pass `--vault` to select a different vault explicitly. Without a service install, commands use `vault.json` in the current directory.
 
 ## Releases
 

@@ -6,6 +6,8 @@ INSTALL_DIR=/usr/local/bin
 DATA_DIR=/var/lib/fakefido
 CONFIG_DIR=/etc/fakefido
 UNIT_FILE=/etc/systemd/system/fakefido.service
+INSTALL_USER=${SUDO_USER:-root}
+INSTALL_GROUP=$(id -gn "$INSTALL_USER")
 R2_PUBLIC_URL="https://pub-7e86b3749663480cb15de05614bda9e4.r2.dev"
 
 say() { printf '%s\n' "$*"; }
@@ -45,6 +47,8 @@ install_usbip() {
 
 install_usbip
 mkdir -p "$INSTALL_DIR" "$DATA_DIR" "$CONFIG_DIR"
+chown "$INSTALL_USER:$INSTALL_GROUP" "$DATA_DIR" "$CONFIG_DIR"
+chmod 700 "$DATA_DIR" "$CONFIG_DIR"
 archive="fakefido-linux-$arch.tar.gz"
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
@@ -59,9 +63,13 @@ if [ ! -f "$CONFIG_DIR/fakefido.env" ]; then
   passphrase=$(od -An -N24 -tx1 /dev/urandom | tr -d ' \n')
   umask 077
   printf 'FAKEFIDO_PASSPHRASE=%s\n' "$passphrase" > "$CONFIG_DIR/fakefido.env"
-  say "Created a random vault passphrase in $CONFIG_DIR/fakefido.env (root-readable only). Back it up securely."
+  say "Created a random vault passphrase in $CONFIG_DIR/fakefido.env (readable only by the installing user and root). Back it up securely."
 fi
+chown "$INSTALL_USER:$INSTALL_GROUP" "$CONFIG_DIR/fakefido.env"
 chmod 600 "$CONFIG_DIR/fakefido.env"
+if [ -f "$DATA_DIR/vault.json" ]; then
+  chown "$INSTALL_USER:$INSTALL_GROUP" "$DATA_DIR/vault.json"
+fi
 
 cat > "$UNIT_FILE" <<'UNIT'
 [Unit]
