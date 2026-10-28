@@ -64,13 +64,12 @@ jobs:
         run: |
           gh release view "$RELEASE_TAG" >/dev/null 2>&1 || gh release create "$RELEASE_TAG" --generate-notes --verify-tag
           gh release upload "$RELEASE_TAG" dist/*.tar.gz dist/*.sha256 --clobber
-      - name: Upload release files to R2
+      - name: Enable R2 public downloads
         id: r2
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
-          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('manual-{0}', github.run_number) }}
         run: |
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           test -n "$CLOUDFLARE_API_TOKEN"
@@ -79,23 +78,32 @@ jobs:
           R2_PUBLIC_URL="$(npx --yes wrangler@4 r2 bucket dev-url get "$R2_BUCKET" | sed -nE "s/.*(https:\/\/[^']+).*/\\1/p" | head -n 1)"
           test -n "$R2_PUBLIC_URL"
           echo "public_url=$R2_PUBLIC_URL" >> "$GITHUB_OUTPUT"
+      - name: Update direct install links
+        env:
+          R2_PUBLIC_URL: ${{ steps.r2.outputs.public_url }}
+        run: |
+          sed -i "s|__FAKEFIDO_R2_PUBLIC_URL__|$R2_PUBLIC_URL|g" README.md site/index.html install.sh
+          sed -i -E "s|https://pub-[^/ ]+\.r2\.dev|$R2_PUBLIC_URL|g" README.md site/index.html install.sh
+      - name: Upload release files to R2
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || format('manual-{0}', github.run_number) }}
+        run: |
           for file in dist/*; do
             name="$(basename "$file")"
             npx --yes wrangler@4 r2 object put "$R2_BUCKET/releases/$RELEASE_TAG/$name" --file="$file" --remote
             npx --yes wrangler@4 r2 object put "$R2_BUCKET/latest/$name" --file="$file" --remote
           done
           npx --yes wrangler@4 r2 object put "$R2_BUCKET/latest/install.sh" --file=install.sh --remote
-      - name: Update public install URL in README and landing page
-        env:
-          R2_PUBLIC_URL: ${{ steps.r2.outputs.public_url }}
+      - name: Commit public download URL changes
         run: |
-          sed -i "s|__FAKEFIDO_R2_PUBLIC_URL__|$R2_PUBLIC_URL|g" README.md site/index.html
-          sed -i -E "s|https://pub-[^/ ]+\.r2\.dev|$R2_PUBLIC_URL|g" README.md site/index.html
-          if ! git diff --quiet -- README.md site/index.html; then
+          if ! git diff --quiet -- README.md site/index.html install.sh; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add README.md site/index.html
-            git commit -m "docs: update public release download URL"
+            git add README.md site/index.html install.sh
+            git commit -m "doc: update public release download URL"
             git push origin HEAD:main
           fi
       - name: Deploy landing page with the release URL

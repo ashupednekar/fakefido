@@ -6,13 +6,14 @@ INSTALL_DIR=/usr/local/bin
 DATA_DIR=/var/lib/fakefido
 CONFIG_DIR=/etc/fakefido
 UNIT_FILE=/etc/systemd/system/fakefido.service
+R2_PUBLIC_URL="__FAKEFIDO_R2_PUBLIC_URL__"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "Error: $*" >&2; exit 1; }
 
 [ "$(id -u)" -eq 0 ] || fail "Run this installer as root (for example: curl ... | sudo sh)."
 [ "$(uname -s)" = Linux ] || fail "The system service installer currently supports Linux only."
-[ -n "${FAKEFIDO_R2_PUBLIC_URL:-}" ] || fail "Set FAKEFIDO_R2_PUBLIC_URL to the public base URL of the R2 bucket."
+[ "$R2_PUBLIC_URL" != "__FAKEFIDO_R2_PUBLIC_URL__" ] || fail "Use the installer from a published FakeFido release."
 
 case "$(uname -m)" in
   x86_64|amd64) arch=amd64 ;;
@@ -45,8 +46,8 @@ archive="fakefido-linux-$arch.tar.gz"
 tmpdir=$(mktemp -d)
 trap 'rm -rf "$tmpdir"' EXIT HUP INT TERM
 say "Downloading FakeFido for linux/$arch"
-curl -fsSL "$FAKEFIDO_R2_PUBLIC_URL/latest/$archive" -o "$tmpdir/$archive"
-curl -fsSL "$FAKEFIDO_R2_PUBLIC_URL/latest/$archive.sha256" -o "$tmpdir/$archive.sha256"
+curl -fsSL "$R2_PUBLIC_URL/latest/$archive" -o "$tmpdir/$archive"
+curl -fsSL "$R2_PUBLIC_URL/latest/$archive.sha256" -o "$tmpdir/$archive.sha256"
 (cd "$tmpdir" && sha256sum -c "$archive.sha256")
 tar -xzf "$tmpdir/$archive" -C "$tmpdir"
 install -m 0755 "$tmpdir/fakefido" "$INSTALL_DIR/fakefido"
