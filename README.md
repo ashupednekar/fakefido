@@ -11,7 +11,7 @@ FakeFido is a small command-line demo that connects [BulwarkID’s Virtual FIDO]
 Prebuilt Linux binaries are published for `amd64` and `arm64`. The installer detects the machine architecture, installs USB/IP using the system package manager, installs the binary, creates a systemd service, and starts it. It requires root access and a Linux kernel with USB/IP support.
 
 ```sh
-export FAKEFIDO_R2_PUBLIC_URL="__FAKEFIDO_R2_PUBLIC_URL__"
+export FAKEFIDO_R2_PUBLIC_URL="https://pub-7e86b3749663480cb15de05614bda9e4.r2.dev"
 curl -fsSL "$FAKEFIDO_R2_PUBLIC_URL/latest/install.sh" \
   | sudo env FAKEFIDO_R2_PUBLIC_URL="$FAKEFIDO_R2_PUBLIC_URL" sh
 ```
