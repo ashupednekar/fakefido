@@ -9,6 +9,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/hex"
 	"fmt"
+	"log"
 	"math/big"
 	"os"
 	"strconv"
@@ -101,8 +102,13 @@ func setPIN(cmd *cobra.Command, args []string) {
 }
 
 func start(cmd *cobra.Command, args []string) {
+	log.Printf("Starting FakeFido")
+	if verbose {
+		log.Printf("Vault: %s", vaultFilename)
+	}
 	client := createClient()
 	runServer(client)
+	log.Printf("FakeFido stopped")
 }
 
 func createClient() *fido_client.DefaultFIDOClient {

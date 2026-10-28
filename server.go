@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"sync"
 	"time"
@@ -61,20 +62,27 @@ func runServer(client fido_client.FIDOClient) {
 	wg := &sync.WaitGroup{}
 	wg.Add(2)
 	go func() {
+		log.Printf("Starting virtual FIDO service")
 		virtual_fido.Start(client)
+		log.Printf("Virtual FIDO service stopped")
 		wg.Done()
 	}()
 	go func() {
 		time.Sleep(500 * time.Millisecond)
 		prog := platformUSBIPExec()
 		if prog != nil {
+			log.Printf("Starting USB/IP attach: %s", prog.Args)
 			prog.Stdin = os.Stdin
 			prog.Stdout = os.Stdout
 			prog.Stderr = os.Stderr
 			err := prog.Run()
 			if err != nil {
-				fmt.Printf("Error: %s\n", err)
+				log.Printf("USB/IP attach exited with error: %v", err)
+			} else {
+				log.Printf("USB/IP attach stopped")
 			}
+		} else {
+			log.Printf("USB/IP attach is not configured for this platform")
 		}
 		wg.Done()
 	}()
