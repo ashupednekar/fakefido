@@ -6,14 +6,14 @@ INSTALL_DIR=/usr/local/bin
 DATA_DIR=/var/lib/fakefido
 CONFIG_DIR=/etc/fakefido
 UNIT_FILE=/etc/systemd/system/fakefido.service
-R2_PUBLIC_URL="__FAKEFIDO_R2_PUBLIC_URL__"
+R2_PUBLIC_URL="https://pub-7e86b3749663480cb15de05614bda9e4.r2.dev"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "Error: $*" >&2; exit 1; }
 
 [ "$(id -u)" -eq 0 ] || fail "Run this installer as root (for example: curl ... | sudo sh)."
 [ "$(uname -s)" = Linux ] || fail "The system service installer currently supports Linux only."
-[ "$R2_PUBLIC_URL" != "__FAKEFIDO_R2_PUBLIC_URL__" ] || fail "Use the installer from a published FakeFido release."
+[ "$R2_PUBLIC_URL" != "https://pub-7e86b3749663480cb15de05614bda9e4.r2.dev" ] || fail "Use the installer from a published FakeFido release."
 
 case "$(uname -m)" in
   x86_64|amd64) arch=amd64 ;;
